@@ -413,6 +413,7 @@ export default function Home() {
           {/* Event Display Card - Match Card Style */}
           <div className="w-full">
             <h4 className="text-xs font-bold uppercase tracking-[0.3em] text-[#f5cc5f]/60 mb-4 flex items-center gap-2">
+              s{" "}
               {loading && (
                 <span className="text-xs font-normal text-[#f5cc5f]/40 animate-pulse">
                   (Loading...)
@@ -692,7 +693,7 @@ export default function Home() {
                 : ""
             }`}
           >
-            {!!paymentStatus ? (
+            {paymentStatus ? (
               <>
                 <svg
                   className="animate-spin h-5 w-5 text-black"

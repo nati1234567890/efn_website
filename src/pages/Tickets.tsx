@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getMyTickets } from "../api/ticket";
 import { useNavigate } from "react-router-dom";
 import { Ticket, Calendar, Flame } from "lucide-react";
 import Footer from "../components/Footer";
@@ -11,36 +12,31 @@ type Ticket = {
   TotalPrice: string;
 };
 
-// Mock tickets for UI preview
-const MOCK_TICKETS: Ticket[] = [
-  {
-    BookingId: "mock-ticket-ethiofightnight-001",
-    PhoneNumber: "0912345678",
-    FullName: "Abebe Kebede",
-    Status: "Confirmed",
-    TotalPrice: "450",
-  },
-  {
-    BookingId: "mock-ticket-ethiofightnight-002",
-    PhoneNumber: "0912345678",
-    FullName: "Sara Tesfaye",
-    Status: "PaymentPending",
-    TotalPrice: "900",
-  },
-  {
-    BookingId: "mock-ticket-ethiofightnight-003",
-    PhoneNumber: "0912345678",
-    FullName: "Dawit Haile",
-    Status: "Cancelled",
-    TotalPrice: "450",
-  },
-];
-
 export default function Tickets() {
-  const [tickets, setTickets] = useState<Ticket[]>(MOCK_TICKETS);
-  const [phone] = useState<string | null>("0912345678");
-  const [loading] = useState(false);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [phone] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+
+  const getUserTickets = async (phone: string) => {
+    setLoading(true);
+    try {
+      const res = await getMyTickets({ phoneNumber: phone });
+
+      const ticketData = res.data?.Result || [];
+      setTickets(ticketData);
+    } catch (error) {
+      setTickets([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (phone) {
+      getUserTickets(phone);
+    }
+  }, [phone]);
 
   // Helper function to get status color
   const getStatusColor = (status: string) => {
@@ -75,10 +71,15 @@ export default function Tickets() {
       {/* Header */}
       <div className="flex items-end justify-between mb-8 max-w-3xl mx-auto border-b border-[#f5cc5f]/20 pb-6">
         <div>
-          <h1 className="text-2xl md:text-xl font-black uppercase tracking-tight text-[#f5cc5f] leading-[0.95]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.35em] text-[#f5cc5f]/60 mb-2">
+            Your Bookings
+          </p>
+          <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-[#f5cc5f] leading-[0.95]">
             My Tickets.
           </h1>
-
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-[#f5cc5f]/60 mt-2">
+            Fight Night — Boxing · Muay Thai · MMA
+          </p>
           {phone && (
             <p className="text-[10px] font-mono text-[#f5cc5f]/40 mt-1">
               {phone}
